@@ -1,0 +1,117 @@
+/* Simple +/-/* expression language; parser evaluates constant expressions on the fly*/
+package compilador;
+
+import java_cup.runtime.*;
+import java.util.ArrayList;
+import java.util.List;
+import structs.TablaSimbolos;
+import structs.Ambito;
+import structs.Elemento;
+
+parser code {:
+    // Connect this parser to a Tabla de Simbolos
+    TablaSimbolos ts = new TablaSimbolos();
+    String tipoFun;
+:}
+
+// terminals /* TOKENS */
+terminal treturn, l_par, r_par, l_brace, r_brace, l_bracket, r_bracket, comma, semicolon;
+terminal assig, add, sub, mul, div, tif, tthen, telse, tfor, twhile, tdo, tuntil, tnot, tand, tor, equals;
+terminal less, greater, lessequal, greaterequal, include, tvoid, tint, tfloat, tboolean;
+terminal Integer constint;
+terminal Float constfloat;
+terminal String tid, hfile;
+
+// non terminals
+non terminal PROGRAM, PART, BLQ, SENTLIST, SENT, RESTPART,LCOND,LCONDT, LCONDF, COND,OPR;
+non terminal String TYPE, EXP, EXPT, FACTOR, HEADER;
+non terminal Ambito LISTPARAM;
+non terminal List<String> LID;
+
+/* GRAMMAR */
+
+PROGRAM ::= PART PROGRAM 
+    | PART 
+;
+
+PART ::= {: ts.NuevoEntorno("Main"); :} TYPE:tr RESTPART:rp {: rp=tr; System.out.println(tr); System.out.println(ts); ts.SalirEntorno(); :}
+    | HEADER:he {: ts.CargarCabeceras(he);System.out.println("Nombre de la cabecera " + he); :}
+;
+
+HEADER ::= include hfile:hf semicolon {: RESULT = hf; System.out.println("Detectada Cabecera"); :}
+;
+
+RESTPART ::= tid:id l_par LISTPARAM:lp r_par {: ts.InsertaID("F",id,tipoFun,lp); :} BLQ
+    | tid l_par tvoid r_par BLQ
+;
+
+LISTPARAM ::= LISTPARAM:lp comma TYPE:tp tid:id {: lp.add(new Elemento("P",id,tp)); RESULT=lp; tipoFun = tp; :}
+    | TYPE:tp tid:id {: RESULT = new Ambito("LISTPARAM"); RESULT.add(new Elemento("PARAM",id,tp)); :}
+;
+
+BLQ ::= {: ts.NuevoEntorno("Bloque"); :} l_brace SENTLIST r_brace {: System.out.println(ts); ts.SalirEntorno(); :}
+;
+
+SENTLIST ::= SENTLIST SENT 
+    | SENT 
+;
+
+SENT ::= TYPE:tid LID:ls {: for(String s:ls){ts.InsertaID("V",s,tid);} :} semicolon  
+    | tid:id {: System.out.println(id); :} assig EXP:te {: try{if(te == ts.getTipoVariable(id)){System.out.println("Variable Encontrada");};}catch(Exception e){System.out.println ("El error es: " + e.getMessage());e.printStackTrace();}; :} semicolon  
+    | tid:id l_par LID:ls r_par semicolon {: try{if(ts.ComprobarParametros(id,ls)){System.out.println("Parametros Correctos");};}catch(Exception e){System.out.println ("El error es: " + e.getMessage());e.printStackTrace();}; :}
+    | treturn EXP semicolon  
+    | tif l_par LCOND r_par tthen BLQ telse BLQ 
+    | tfor l_par tid assig EXP semicolon LCOND semicolon tid assig EXP r_par BLQ 
+    | twhile l_par LCOND r_par BLQ 
+    | tdo BLQ tuntil l_par LCOND r_par 
+    | BLQ 
+;
+
+LID ::= tid:id {: RESULT = new ArrayList<String>(); RESULT.add(id); :}
+    | tid:id comma LID:ls {: ls.add(id); RESULT = ls; :}
+    | /* empty */ 
+;
+
+EXP ::= EXP:te0 add EXPT:te {: try{if(ts.Iguales(te0,te,"ADD")){ RESULT = te; };}catch(Exception e){System.out.println ("El error es: " + e.getMessage());e.printStackTrace();}; :}
+    | EXP:te0 sub EXPT:te {: try{if(ts.Iguales(te0,te,"SUB")){ RESULT = te; };}catch(Exception e){System.out.println ("El error es: " + e.getMessage());e.printStackTrace();}; :} 
+    | EXPT:te {: RESULT = te; :}
+;
+
+EXPT ::= EXPT:te0 mul FACTOR:te {: try{if(ts.Iguales(te0,te,"MUL")){ RESULT = te; };}catch(Exception e){System.out.println ("El error es: " + e.getMessage());e.printStackTrace();}; :}
+    | EXPT:te0 div FACTOR:te {: try{if(ts.Iguales(te0,te,"DIV")){ RESULT = te; };}catch(Exception e){System.out.println ("El error es: " + e.getMessage());e.printStackTrace();}; :}
+    | FACTOR:te {: RESULT = te; :}
+;
+
+FACTOR ::= tid:id l_par LID:ls r_par {: try{if(ts.ComprobarParametros(id,ls)){RESULT = ts.getTipoFuncion(id);System.out.println("Parametros Correctos");};}catch(Exception e){System.out.println ("El error es: " + e.getMessage());e.printStackTrace();}; :}
+    | l_bracket EXP:te r_bracket {: RESULT = te; :}
+    | tid:id {: RESULT = ts.getTipoVariable(id); :}
+    | constint:i {: RESULT = "I"; System.out.println(i); :}
+    | constfloat:f {: RESULT = "F"; System.out.println(f); :}
+;
+
+TYPE ::= tvoid {: RESULT = "V"; :}
+    | tint {: RESULT = "I"; System.out.println("Detectada declaracion de Entero"); :}
+    | tfloat {: RESULT = "F"; System.out.println("Detectada declaracion de Real"); :}
+;
+
+LCOND::= LCOND tor LCONDT 
+        | LCONDT 
+;
+
+LCONDT::= LCONDT tand LCONDF 
+        |LCONDF 
+;
+
+LCONDF ::= COND 
+        | tnot COND 
+;
+
+COND ::= EXP:te0 OPR EXP:te {: try{if(ts.Iguales(te0,te,null)){ RESULT = te; };}catch(Exception e){System.out.println ("El error es: " + e.getMessage());e.printStackTrace();}; :}
+;
+
+OPR::=  equals 
+    | less 
+    | greater 
+    | greaterequal 
+    | lessequal 
+;
