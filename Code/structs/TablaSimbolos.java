@@ -9,9 +9,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
-import java.util.regex.Pattern;
 
 /**
  *
@@ -19,9 +19,30 @@ import java.util.regex.Pattern;
  */
 public class TablaSimbolos { //pila de ambitos y cada ambito 3 listas de parametros,variables
     private Stack<Ambito> pilaAmbitos;
+    private List<Ambito> listaFunciones;
         
     public TablaSimbolos(){
         this.pilaAmbitos = new Stack<>();
+        this.listaFunciones = new ArrayList<>();
+    }
+    
+    public void push(Ambito a){
+        this.pilaAmbitos.push(a);
+    }
+    
+    public Ambito buscarFuncion(String na){
+        Ambito aux = null;
+        for(Ambito a : this.pilaAmbitos){
+            if(a.getNombre().equals(na)){
+                aux = a;
+            }
+        }
+        
+        return aux;
+    }
+    
+    public void agregarFuncion(Ambito a){
+        this.listaFunciones.add(a);
     }
 
     public Stack<Ambito> getPilaAmbitos() {
@@ -47,10 +68,14 @@ public class TablaSimbolos { //pila de ambitos y cada ambito 3 listas de paramet
         a.add(e);
     }
     
-    public void InsertaID(String clase, String lexema, String tipo, Ambito ap){
+    public Elemento InsertaID(String clase, String lexema, String tipo, Ambito ap){
         Ambito a = this.pilaAmbitos.peek();
         Elemento e = new Elemento(clase,lexema,tipo,ap);
         a.add(e);
+        
+        this.pilaAmbitos.push(ap);
+        
+        return e;
     }
     
     public Elemento busca(String lexema){
@@ -72,7 +97,7 @@ public class TablaSimbolos { //pila de ambitos y cada ambito 3 listas de paramet
         
         Elemento e = this.busca(v);
         if(e != null){
-            if(e.getClase().equals("V")){
+            if(e.getClase().equals("V") || e.getClase().equals("PARAM")){
                 return e.getTipo();
             } else {
                 throw new ErrorSintactico("Elemento " + v + " no es una variable");
@@ -105,7 +130,7 @@ public class TablaSimbolos { //pila de ambitos y cada ambito 3 listas de paramet
         boolean check = false;
         
         Ambito aux = null;
-        Elemento e;
+        Elemento e= null;
         for(Ambito a : this.pilaAmbitos){
             e = a.busca(nf);
             if (e != null) {
@@ -115,25 +140,47 @@ public class TablaSimbolos { //pila de ambitos y cada ambito 3 listas de paramet
                 }
             }
         } //Buscamos el ambito donde se encuntre NF
-        
+
         int size = p.size();
         int sum = 0;
-        
-        for(Elemento elem : aux.getElementos()){
-            if(elem.getClase().equals("P")){
+        if(e.getParametros() != null){
+        for(Elemento elem : e.getParametros().getElementos()){
+            if(elem.getClase().equals("PARAM")){
                 for(String n : p){
-                    if(elem.getLexema().equals(n)){
+                    if(this.pilaAmbitos.peek().busca(n)!= null){
+                    if(elem.getTipo().equals(this.pilaAmbitos.peek().busca(n).getTipo())){
                         check = true;
                         sum++;
+                    }
                     }
                 }
             }
         } //Comprobamos que dicho ambito sea igual a todos los parametros N:N
-        
+        } 
         if (sum == size){
             return check;
         } else {
             throw new ErrorSintactico("Funcion " + nf + " no corresponden parametros");
+        }
+    }
+    
+    public boolean ComprobarTipoFuncion(String nf, String tr) throws ErrorSintactico {
+        boolean check = false;
+        
+        Elemento e= null;
+        for(Ambito a : this.pilaAmbitos){
+            e = a.busca(nf);
+            if (e != null) {
+                if(e.getClase().equals("F")){
+                    check = e.getTipo().equals(tr);
+                }
+            }
+        }
+        
+        if (check == true){
+            return check;
+        } else {
+            throw new ErrorSintactico("No corresponden los tipos de retorno");
         }
     }
     
@@ -173,20 +220,35 @@ public class TablaSimbolos { //pila de ambitos y cada ambito 3 listas de paramet
               
               String list = parts[1].replace("\\);", "");
               Ambito lp = new Ambito("LISTPARAM");
-              if(list.contains(",")){
+              System.out.println("TAM " + list.length() + " contenido " + list);
+              if(list.length() <= 3){
+                  this.InsertaID("F",type_name[1],type_name[0].toUpperCase().substring(0,1),null);
+              } else if(list.contains(",")){
+                 // list = list.replace(",  ",","); 
+                 // System.out.println(list);
                   String[] argv = list.split(",");
                   for(String s : argv){
-                      String[] params = s.split(" ");
-                      lp.add(new Elemento("P",params[1],params[0]));
+                      System.out.println("String to split"+s);
+                      String[] params = s.trim().split(" ");
+                      int iii=0;
+                      for(String sss : params){
+                          System.out.println(iii+" "+sss);
+                          iii++;
+                      }
+                      System.out.println("Size " +params[0].length());
+                      System.out.println((params[0]).charAt(0));
+                      System.out.println(params[1]);
+                      
+                      lp.add(new Elemento("PARAM",params[1],params[0].toUpperCase().substring(0,1)));
                   }
-                  this.InsertaID("F",type_name[1],type_name[0],lp);
+                  this.InsertaID("F",type_name[1],type_name[0].toUpperCase().substring(0,1),lp);
               } else {
                   String[] params = list.split(" ");
-                  lp.add(new Elemento("P",params[1],params[0]));
-                  this.InsertaID("F",type_name[1],type_name[0],lp);
+                  lp.add(new Elemento("PARAM",params[1],params[0].toUpperCase().substring(0,1)));
+                  this.InsertaID("F",type_name[1],type_name[0].toUpperCase().substring(0,1),lp);
               }
               System.out.println(this.toString());
-              this.SalirEntorno();
+              //this.SalirEntorno();
            }
         } catch(IOException e) {
             System.out.println ("El error es: " + e.getMessage());

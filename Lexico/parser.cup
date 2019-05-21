@@ -12,6 +12,7 @@ parser code {:
     // Connect this parser to a Tabla de Simbolos
     TablaSimbolos ts = new TablaSimbolos();
     String tipoFun;
+    String nombreFun;
 :}
 
 // terminals /* TOKENS */
@@ -34,22 +35,23 @@ PROGRAM ::= PART PROGRAM
     | PART 
 ;
 
-PART ::= {: ts.NuevoEntorno("Main"); :} TYPE:tr RESTPART:rp {: rp=tr; System.out.println(tr); System.out.println(ts); ts.SalirEntorno(); :}
+PART ::= {: ts.NuevoEntorno("Main"); :} TYPE:tr {: tipoFun = tr; :} RESTPART:rp {: System.out.println(tr); System.out.println(ts); ts.SalirEntorno(); :}
     | HEADER:he {: ts.CargarCabeceras(he);System.out.println("Nombre de la cabecera " + he); :}
 ;
 
 HEADER ::= include hfile:hf semicolon {: RESULT = hf; System.out.println("Detectada Cabecera"); :}
 ;
 
-RESTPART ::= tid:id l_par LISTPARAM:lp r_par {: ts.InsertaID("F",id,tipoFun,lp); :} BLQ
+RESTPART ::= tid:id l_par LISTPARAM:lp r_par {: RESULT = ts.InsertaID("F",id,tipoFun,lp); nombreFun = id; :} BLQ
     | tid l_par tvoid r_par BLQ
 ;
 
-LISTPARAM ::= LISTPARAM:lp comma TYPE:tp tid:id {: lp.add(new Elemento("P",id,tp)); RESULT=lp; tipoFun = tp; :}
+LISTPARAM ::= LISTPARAM:lp comma TYPE:tp tid:id {: Elemento e = new Elemento("P",id,tp); lp.add(e); ts.getPilaAmbitos().peek().add(e); RESULT=lp; :}
     | TYPE:tp tid:id {: RESULT = new Ambito("LISTPARAM"); RESULT.add(new Elemento("PARAM",id,tp)); :}
+    | /* Empty */
 ;
 
-BLQ ::= {: ts.NuevoEntorno("Bloque"); :} l_brace SENTLIST r_brace {: System.out.println(ts); ts.SalirEntorno(); :}
+BLQ ::= {: ts.NuevoEntorno(nombreFun); :} l_brace SENTLIST r_brace {: System.out.println(ts); ts.SalirEntorno(); :}
 ;
 
 SENTLIST ::= SENTLIST SENT 
@@ -57,10 +59,11 @@ SENTLIST ::= SENTLIST SENT
 ;
 
 SENT ::= TYPE:tid LID:ls {: for(String s:ls){ts.InsertaID("V",s,tid);} :} semicolon  
-    | tid:id {: System.out.println(id); :} assig EXP:te {: try{if(te == ts.getTipoVariable(id)){System.out.println("Variable Encontrada");};}catch(Exception e){System.out.println ("El error es: " + e.getMessage());e.printStackTrace();}; :} semicolon  
-    | tid:id l_par LID:ls r_par semicolon {: try{if(ts.ComprobarParametros(id,ls)){System.out.println("Parametros Correctos");};}catch(Exception e){System.out.println ("El error es: " + e.getMessage());e.printStackTrace();}; :}
-    | treturn EXP semicolon  
-    | tif l_par LCOND r_par tthen BLQ telse BLQ 
+    | tid:id {: System.out.println(id); :} assig EXP:te {: try{if(!(te == ts.getTipoVariable(id))){throw new Exception("Tipos Asignacion Incorrectos");};}catch(Exception e){System.out.println ("Compilacion Abortada 1: " + e.getMessage());}; :} semicolon  
+    | tid:id l_par LID:ls r_par semicolon {: try{ts.ComprobarParametros(id,ls);}catch(Exception e){System.out.println ("Compilacion Abortada 2: " + e.getMessage());}; :}
+    | treturn EXP:te {: ts.ComprobarTipoFuncion(ts.getPilaAmbitos().peek().getNombre(), te); :} semicolon  
+    | tif l_par LCOND:c r_par tthen BLQ telse BLQ {: try{if(!(c.equals("B"))){throw new Exception("Condicional No Booleano if-else");};}catch(Exception e){System.out.println ("Compilacion Abortada 8: " + e.getMessage());}; :}
+    | tif l_par LCOND:c r_par tthen BLQ {: try{if(!(c.equals("B"))){throw new Exception("Condicional No Booleano if-else");};}catch(Exception e){System.out.println ("Compilacion Abortada 8: " + e.getMessage());}; :}
     | tfor l_par tid assig EXP semicolon LCOND semicolon tid assig EXP r_par BLQ 
     | twhile l_par LCOND r_par BLQ 
     | tdo BLQ tuntil l_par LCOND r_par 
@@ -72,17 +75,17 @@ LID ::= tid:id {: RESULT = new ArrayList<String>(); RESULT.add(id); :}
     | /* empty */ 
 ;
 
-EXP ::= EXP:te0 add EXPT:te {: try{if(ts.Iguales(te0,te,"ADD")){ RESULT = te; };}catch(Exception e){System.out.println ("El error es: " + e.getMessage());e.printStackTrace();}; :}
-    | EXP:te0 sub EXPT:te {: try{if(ts.Iguales(te0,te,"SUB")){ RESULT = te; };}catch(Exception e){System.out.println ("El error es: " + e.getMessage());e.printStackTrace();}; :} 
+EXP ::= EXP:te0 add EXPT:te {: try{if(ts.Iguales(te0,te,"ADD")){ RESULT = te; };}catch(Exception e){System.out.println ("Compilacion Abortada 3: " + e.getMessage());}; :}
+    | EXP:te0 sub EXPT:te {: try{if(ts.Iguales(te0,te,"SUB")){ RESULT = te; };}catch(Exception e){System.out.println ("Compilacion Abortada 4: " + e.getMessage());}; :} 
     | EXPT:te {: RESULT = te; :}
 ;
 
-EXPT ::= EXPT:te0 mul FACTOR:te {: try{if(ts.Iguales(te0,te,"MUL")){ RESULT = te; };}catch(Exception e){System.out.println ("El error es: " + e.getMessage());e.printStackTrace();}; :}
-    | EXPT:te0 div FACTOR:te {: try{if(ts.Iguales(te0,te,"DIV")){ RESULT = te; };}catch(Exception e){System.out.println ("El error es: " + e.getMessage());e.printStackTrace();}; :}
+EXPT ::= EXPT:te0 mul FACTOR:te {: try{if(ts.Iguales(te0,te,"MUL")){ RESULT = te; };}catch(Exception e){System.out.println ("Compilacion Abortada 5: " + e.getMessage());}; :}
+    | EXPT:te0 div FACTOR:te {: try{if(ts.Iguales(te0,te,"DIV")){ RESULT = te; };}catch(Exception e){System.out.println ("Compilacion Abortada 6: " + e.getMessage());}; :}
     | FACTOR:te {: RESULT = te; :}
 ;
 
-FACTOR ::= tid:id l_par LID:ls r_par {: try{if(ts.ComprobarParametros(id,ls)){RESULT = ts.getTipoFuncion(id);System.out.println("Parametros Correctos");};}catch(Exception e){System.out.println ("El error es: " + e.getMessage());e.printStackTrace();}; :}
+FACTOR ::= tid:id l_par LID:ls r_par {: try{if(ts.ComprobarParametros(id,ls)){ System.out.println("HOLA"); RESULT = ts.getTipoFuncion(id);};}catch(Exception e){System.out.println ("Compilacion Abortada 7: " + e.getMessage());}; :}
     | l_bracket EXP:te r_bracket {: RESULT = te; :}
     | tid:id {: RESULT = ts.getTipoVariable(id); :}
     | constint:i {: RESULT = "I"; System.out.println(i); :}
@@ -94,19 +97,19 @@ TYPE ::= tvoid {: RESULT = "V"; :}
     | tfloat {: RESULT = "F"; System.out.println("Detectada declaracion de Real"); :}
 ;
 
-LCOND::= LCOND tor LCONDT 
-        | LCONDT 
+LCOND::= LCOND tor LCONDT:c {: RESULT = c; :} 
+        | LCONDT:c {: RESULT = c; :} 
 ;
 
-LCONDT::= LCONDT tand LCONDF 
-        |LCONDF 
+LCONDT::= LCONDT tand LCONDF:c {: RESULT = c; :}  
+        |LCONDF:c {: RESULT = c; :}  
 ;
 
-LCONDF ::= COND 
-        | tnot COND 
+LCONDF ::= COND:c {: RESULT = c; :} 
+        | tnot COND:c {: RESULT = c; :} 
 ;
 
-COND ::= EXP:te0 OPR EXP:te {: try{if(ts.Iguales(te0,te,null)){ RESULT = te; };}catch(Exception e){System.out.println ("El error es: " + e.getMessage());e.printStackTrace();}; :}
+COND ::= EXP:te0 OPR EXP:te {: try{if(ts.Iguales(te0,te,null)){ RESULT = "B"; };}catch(Exception e){System.out.println ("Compilacion Abortada: " + e.getMessage());}; :}
 ;
 
 OPR::=  equals 
