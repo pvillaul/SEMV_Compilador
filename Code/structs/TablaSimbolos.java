@@ -221,7 +221,7 @@ public class TablaSimbolos { //pila de ambitos y cada ambito 3 listas de paramet
               String list = parts[1].replace("\\);", "");
               Ambito lp = new Ambito("LISTPARAM");
               System.out.println("TAM " + list.length() + " contenido " + list);
-              if(list.length() <= 3){
+              if(list.contains("void")){
                   this.InsertaID("F",type_name[1],type_name[0].toUpperCase().substring(0,1),null);
               } else if(list.contains(",")){
                  // list = list.replace(",  ",","); 

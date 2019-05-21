@@ -1,12 +1,13 @@
 #include test.h;
 
 int func(int g){
+	int c;
+	c = 10;
 	return c;
 }
 
-int main(int d) {
+int main(void) {
 	int e;
-int f;
-	c =foo(e);
+	e = 7;
 	return 0;
 }
