@@ -1,13 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="48aa1af4-a191-48d9-bb85-844c4b9472bf" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/compilador/Compilador.java" beforeDir="false" afterPath="$PROJECT_DIR$/compilador/Compilador.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/compilador/parser.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/structs/TablaSimbolos.java" beforeDir="false" afterPath="$PROJECT_DIR$/structs/TablaSimbolos.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Lexico/parser.cup" beforeDir="false" afterPath="$PROJECT_DIR$/../Lexico/parser.cup" afterDir="false" />
-    </list>
+    <list default="true" id="48aa1af4-a191-48d9-bb85-844c4b9472bf" name="Default Changelist" comment="" />
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -27,12 +21,12 @@
         <counts>
           <entry key="cup" value="1" />
           <entry key="flex" value="1" />
-          <entry key="java" value="21" />
+          <entry key="java" value="23" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
-          <entry key="JAVA" value="21" />
+          <entry key="JAVA" value="23" />
           <entry key="PLAIN_TEXT" value="2" />
         </counts>
       </usages-collector>
@@ -50,7 +44,7 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/compilador/Compilador.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="339">
@@ -59,11 +53,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/structs/TablaSimbolos.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="177">
-              <caret line="88" column="13" selection-start-line="88" selection-start-column="13" selection-end-line="88" selection-end-column="13" />
+            <state relative-caret-position="228">
+              <caret line="136" column="25" lean-forward="true" selection-start-line="136" selection-start-column="25" selection-end-line="136" selection-end-column="25" />
               <folding>
                 <element signature="e#757#758#0" expanded="true" />
                 <element signature="e#797#798#0" expanded="true" />
@@ -77,8 +71,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/compilador/parser.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="117">
-              <caret line="853" column="47" selection-start-line="853" selection-start-column="47" selection-end-line="853" selection-end-column="47" />
+            <state relative-caret-position="14875">
+              <caret line="890" column="23" selection-start-line="890" selection-start-column="23" selection-end-line="890" selection-end-column="46" />
             </state>
           </provider>
         </entry>
@@ -112,6 +106,7 @@
       <find>println(&quot;</find>
       <find>nn</find>
       <find>abortada 7</find>
+      <find>println</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -131,8 +126,8 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/compilador/parser.java" />
-        <option value="$PROJECT_DIR$/structs/TablaSimbolos.java" />
         <option value="$PROJECT_DIR$/compilador/Compilador.java" />
+        <option value="$PROJECT_DIR$/structs/TablaSimbolos.java" />
       </list>
     </option>
   </component>
@@ -182,12 +177,12 @@
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1558539560416" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../../java-cup-bin-11b-20160615.tar/java-cup-bin-11b-20160615/java-cup-11b-runtime.jar!/" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1558540962300" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
-    <property name="project.structure.last.edited" value="Modules" />
-    <property name="project.structure.proportion" value="0.0" />
+    <property name="project.structure.last.edited" value="Artifacts" />
+    <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
   </component>
   <component name="RecentsManager">
@@ -237,12 +232,12 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1558527663875</updated>
-      <workItem from="1558527665224" duration="6513000" />
+      <workItem from="1558527665224" duration="7899000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="6513000" />
+    <option name="totallyTimeSpent" value="7899000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="3832" y="-8" width="1936" height="1056" extended-state="6" />
@@ -253,7 +248,7 @@
       <window_info id="UI Designer" />
       <window_info id="Capture Tool" />
       <window_info id="Favorites" side_tool="true" />
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.02771855" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.1663113" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info anchor="bottom" id="Docker" />
       <window_info anchor="bottom" id="Messages" weight="0.32956153" />
@@ -263,7 +258,7 @@
       <window_info anchor="bottom" id="Event Log" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.4301192" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.2990249" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.39886847" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -292,13 +287,6 @@
     <entry file="file://$PROJECT_DIR$/compilador/parser.cup">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/compilador/sym.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="241">
-          <caret line="18" column="38" lean-forward="true" selection-start-line="18" selection-start-column="38" selection-end-line="18" selection-end-column="38" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/structs/ErrorSintactico.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="119">
@@ -306,30 +294,37 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/compilador/Compilador.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="339">
+          <caret line="37" column="60" selection-start-line="37" selection-start-column="60" selection-end-line="37" selection-end-column="60" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/compilador/parser.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="117">
-          <caret line="853" column="47" selection-start-line="853" selection-start-column="47" selection-end-line="853" selection-end-column="47" />
+        <state relative-caret-position="14875">
+          <caret line="890" column="23" selection-start-line="890" selection-start-column="23" selection-end-line="890" selection-end-column="46" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/compilador/sym.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="241">
+          <caret line="18" column="38" lean-forward="true" selection-start-line="18" selection-start-column="38" selection-end-line="18" selection-end-column="38" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/structs/TablaSimbolos.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="177">
-          <caret line="88" column="13" selection-start-line="88" selection-start-column="13" selection-end-line="88" selection-end-column="13" />
+        <state relative-caret-position="228">
+          <caret line="136" column="25" lean-forward="true" selection-start-line="136" selection-start-column="25" selection-end-line="136" selection-end-column="25" />
           <folding>
             <element signature="e#757#758#0" expanded="true" />
             <element signature="e#797#798#0" expanded="true" />
             <element signature="e#8672#8673#0" expanded="true" />
             <element signature="e#8748#8749#0" expanded="true" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/compilador/Compilador.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="339">
-          <caret line="37" column="60" selection-start-line="37" selection-start-column="60" selection-end-line="37" selection-end-column="60" />
         </state>
       </provider>
     </entry>
