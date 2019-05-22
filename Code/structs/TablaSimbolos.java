@@ -33,7 +33,7 @@ public class TablaSimbolos { //pila de ambitos y cada ambito 3 listas de paramet
     public Ambito buscarFuncion(String na){
         Ambito aux = null;
         for(Ambito a : this.pilaAmbitos){
-            if(a.getNombre().equals(na)){
+            if(a != null && a.getNombre().equals(na)){
                 aux = a;
             }
         }
@@ -81,9 +81,11 @@ public class TablaSimbolos { //pila de ambitos y cada ambito 3 listas de paramet
     public Elemento busca(String lexema){
         Elemento e;
         for(Ambito a : this.pilaAmbitos){
-            e = a.busca(lexema);
-            if (e != null) {
-                return e;
+            if(a != null){
+                e = a.busca(lexema);
+                if (e != null) {
+                    return e;
+                }
             }
         }
         return null;
@@ -132,6 +134,7 @@ public class TablaSimbolos { //pila de ambitos y cada ambito 3 listas de paramet
         Ambito aux = null;
         Elemento e= null;
         for(Ambito a : this.pilaAmbitos){
+            if(a != null)
             e = a.busca(nf);
             if (e != null) {
                 if(e.getClase().equals("F")){
@@ -141,14 +144,17 @@ public class TablaSimbolos { //pila de ambitos y cada ambito 3 listas de paramet
             }
         } //Buscamos el ambito donde se encuntre NF
 
+        if(e == null){
+            throw new ErrorSintactico("Funcion " + nf + " no definida");
+        }
         int size = p.size();
         int sum = 0;
         if(e.getParametros() != null){
         for(Elemento elem : e.getParametros().getElementos()){
             if(elem.getClase().equals("PARAM")){
                 for(String n : p){
-                    if(this.pilaAmbitos.peek().busca(n)!= null){
-                    if(elem.getTipo().equals(this.pilaAmbitos.peek().busca(n).getTipo())){
+                    if(this.busca(n)!= null){
+                    if(elem.getTipo().equals(this.busca(n).getTipo())){
                         check = true;
                         sum++;
                     }
@@ -158,7 +164,7 @@ public class TablaSimbolos { //pila de ambitos y cada ambito 3 listas de paramet
         } //Comprobamos que dicho ambito sea igual a todos los parametros N:N
         } 
         if (sum == size){
-            return check;
+            return true;
         } else {
             throw new ErrorSintactico("Funcion " + nf + " no corresponden parametros");
         }
@@ -169,6 +175,7 @@ public class TablaSimbolos { //pila de ambitos y cada ambito 3 listas de paramet
         
         Elemento e= null;
         for(Ambito a : this.pilaAmbitos){
+            if(a != null)
             e = a.busca(nf);
             if (e != null) {
                 if(e.getClase().equals("F")){
@@ -206,38 +213,25 @@ public class TablaSimbolos { //pila de ambitos y cada ambito 3 listas de paramet
         try {
            // Apertura del fichero y creacion de BufferedReader para poder
            // hacer una lectura comoda (disponer del metodo readLine()).
-           archivo = new File ("/home/pablo/" + ruta);
+           archivo = new File (ruta);
            fr = new FileReader (archivo);
            br = new BufferedReader(fr);
 
            // Lectura del fichero
            String linea;
            while((linea=br.readLine())!=null) {
-              System.out.println(linea);
               String[] parts = linea.split("\\(");
               String[] type_name = parts[0].split(" ");
               this.NuevoEntorno(type_name[1]); //Creamos un nuevo entorno con el nombre de la funcion
               
               String list = parts[1].replace("\\);", "");
               Ambito lp = new Ambito("LISTPARAM");
-              System.out.println("TAM " + list.length() + " contenido " + list);
               if(list.contains("void")){
                   this.InsertaID("F",type_name[1],type_name[0].toUpperCase().substring(0,1),null);
               } else if(list.contains(",")){
-                 // list = list.replace(",  ",","); 
-                 // System.out.println(list);
                   String[] argv = list.split(",");
                   for(String s : argv){
-                      System.out.println("String to split"+s);
                       String[] params = s.trim().split(" ");
-                      int iii=0;
-                      for(String sss : params){
-                          System.out.println(iii+" "+sss);
-                          iii++;
-                      }
-                      System.out.println("Size " +params[0].length());
-                      System.out.println((params[0]).charAt(0));
-                      System.out.println(params[1]);
                       
                       lp.add(new Elemento("PARAM",params[1],params[0].toUpperCase().substring(0,1)));
                   }
@@ -247,11 +241,10 @@ public class TablaSimbolos { //pila de ambitos y cada ambito 3 listas de paramet
                   lp.add(new Elemento("PARAM",params[1],params[0].toUpperCase().substring(0,1)));
                   this.InsertaID("F",type_name[1],type_name[0].toUpperCase().substring(0,1),lp);
               }
-              System.out.println(this.toString());
-              //this.SalirEntorno();
            }
         } catch(IOException e) {
-            System.out.println ("El error es: " + e.getMessage());
+            System.out.println ("Compilacion Abortada: " + e.getMessage());
+            System.exit(-1);
         } finally {
            // En el finally cerramos el fichero, para asegurarnos
            // que se cierra tanto si todo va bien como si salta 
@@ -261,7 +254,8 @@ public class TablaSimbolos { //pila de ambitos y cada ambito 3 listas de paramet
                  fr.close();     
               }                  
            }catch (IOException e2){
-               System.out.println ("El error es: " + e2.getMessage());
+               System.out.println ("Compilacion Abortada: " + e2.getMessage());
+               System.exit(-1);
            }
         }
     }

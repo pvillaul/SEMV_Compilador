@@ -22,22 +22,19 @@ public class Compilador {
      */
     public static void main(String[] args) throws Exception {
         TablaSimbolos ts = new TablaSimbolos();
-        ts.NuevoEntorno("Main");
-        ts.InsertaID("V","iva","F");
-        System.out.println(ts);
-        
+
         String ruta;
         
         if(args.length != 0){
             ruta = args[0];
         } else {
-            ruta = "/home/pablo/test.c";
+            ruta = "test.c";
         }
         
         System.out.println("Comenzando compilacion");
         Reader reader = new FileReader(ruta);
         parser p = new parser(new AnalizadorLexico(reader));
         p.parse();
-        System.out.println("Compilacion Finalizada");
+        System.out.println("Compilacion finalizada con exito");
     }
 }

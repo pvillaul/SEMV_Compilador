@@ -35,8 +35,8 @@ PROGRAM ::= PART PROGRAM
     | PART 
 ;
 
-PART ::= {: ts.NuevoEntorno("Main"); :} TYPE:tr {: tipoFun = tr; :} RESTPART:rp {: System.out.println(tr); System.out.println(ts); ts.SalirEntorno(); :}
-    | HEADER:he {: ts.CargarCabeceras(he);System.out.println("Nombre de la cabecera " + he); :}
+PART ::= {: ts.NuevoEntorno("Main"); :} TYPE:tr {: tipoFun = tr; :} RESTPART:rp 
+    | HEADER:he {: ts.CargarCabeceras(he); :}
 ;
 
 HEADER ::= include hfile:hf semicolon {: RESULT = hf; System.out.println("Detectada Cabecera"); :}
@@ -51,7 +51,7 @@ LISTPARAM ::= LISTPARAM:lp comma TYPE:tp tid:id {: Elemento e = new Elemento("P"
     | /* Empty */
 ;
 
-BLQ ::= {: ts.NuevoEntorno(nombreFun); :} l_brace SENTLIST r_brace {: System.out.println(ts); ts.SalirEntorno(); :}
+BLQ ::= {: ts.NuevoEntorno(nombreFun); :} l_brace SENTLIST r_brace {:  ts.SalirEntorno(); :}
 ;
 
 SENTLIST ::= SENTLIST SENT 
@@ -59,11 +59,11 @@ SENTLIST ::= SENTLIST SENT
 ;
 
 SENT ::= TYPE:tid LID:ls {: for(String s:ls){ts.InsertaID("V",s,tid);} :} semicolon  
-    | tid:id {: System.out.println(id); :} assig EXP:te {: try{if(!(te == ts.getTipoVariable(id))){throw new Exception("Tipos Asignacion Incorrectos");};}catch(Exception e){System.out.println ("Compilacion Abortada 1: " + e.getMessage());}; :} semicolon  
-    | tid:id l_par LID:ls r_par semicolon {: try{ts.ComprobarParametros(id,ls);}catch(Exception e){System.out.println ("Compilacion Abortada 2: " + e.getMessage());}; :}
+    | tid:id assig EXP:te {: try{if(!(te.equals(ts.getTipoVariable(id)))){throw new Exception("Tipos Asignacion Incorrectos");};}catch(Exception e){System.out.println ("Compilacion Abortada 1: " + e.getMessage()); System.exit(-1);}; :} semicolon  
+    | tid:id l_par LID:ls r_par semicolon {: try{ts.ComprobarParametros(id,ls);}catch(Exception e){System.out.println ("Compilacion Abortada 2: " + e.getMessage());  System.exit(-1);}; :}
     | treturn EXP:te {: ts.ComprobarTipoFuncion(ts.getPilaAmbitos().peek().getNombre(), te); :} semicolon  
     | tif l_par LCOND:c r_par tthen BLQ telse BLQ {: try{if(!(c.equals("B"))){throw new Exception("Condicional No Booleano if-else");};}catch(Exception e){System.out.println ("Compilacion Abortada 8: " + e.getMessage());}; :}
-    | tif l_par LCOND:c r_par tthen BLQ {: try{if(!(c.equals("B"))){throw new Exception("Condicional No Booleano if-else");};}catch(Exception e){System.out.println ("Compilacion Abortada 8: " + e.getMessage());}; :}
+    | tif l_par LCOND:c r_par tthen BLQ {: try{if(!(c.equals("B"))){throw new Exception("Condicional No Booleano if-else");};}catch(Exception e){System.out.println ("Compilacion Abortada 8: " + e.getMessage()); System.exit(-1);}; :}
     | tfor l_par tid assig EXP semicolon LCOND semicolon tid assig EXP r_par BLQ 
     | twhile l_par LCOND r_par BLQ 
     | tdo BLQ tuntil l_par LCOND r_par 
@@ -75,17 +75,17 @@ LID ::= tid:id {: RESULT = new ArrayList<String>(); RESULT.add(id); :}
     | /* empty */ 
 ;
 
-EXP ::= EXP:te0 add EXPT:te {: try{if(ts.Iguales(te0,te,"ADD")){ RESULT = te; };}catch(Exception e){System.out.println ("Compilacion Abortada 3: " + e.getMessage());}; :}
-    | EXP:te0 sub EXPT:te {: try{if(ts.Iguales(te0,te,"SUB")){ RESULT = te; };}catch(Exception e){System.out.println ("Compilacion Abortada 4: " + e.getMessage());}; :} 
+EXP ::= EXP:te0 add EXPT:te {: try{if(ts.Iguales(te0,te,"ADD")){ RESULT = te; };}catch(Exception e){System.out.println ("Compilacion Abortada 3: " + e.getMessage()); System.exit(-1);}; :}
+    | EXP:te0 sub EXPT:te {: try{if(ts.Iguales(te0,te,"SUB")){ RESULT = te; };}catch(Exception e){System.out.println ("Compilacion Abortada 4: " + e.getMessage()); System.exit(-1);}; :} 
     | EXPT:te {: RESULT = te; :}
 ;
 
-EXPT ::= EXPT:te0 mul FACTOR:te {: try{if(ts.Iguales(te0,te,"MUL")){ RESULT = te; };}catch(Exception e){System.out.println ("Compilacion Abortada 5: " + e.getMessage());}; :}
-    | EXPT:te0 div FACTOR:te {: try{if(ts.Iguales(te0,te,"DIV")){ RESULT = te; };}catch(Exception e){System.out.println ("Compilacion Abortada 6: " + e.getMessage());}; :}
+EXPT ::= EXPT:te0 mul FACTOR:te {: try{if(ts.Iguales(te0,te,"MUL")){ RESULT = te; };}catch(Exception e){System.out.println ("Compilacion Abortada 5: " + e.getMessage()); System.exit(-1);}; :}
+    | EXPT:te0 div FACTOR:te {: try{if(ts.Iguales(te0,te,"DIV")){ RESULT = te; };}catch(Exception e){System.out.println ("Compilacion Abortada 6: " + e.getMessage()); System.exit(-1);}; :}
     | FACTOR:te {: RESULT = te; :}
 ;
 
-FACTOR ::= tid:id l_par LID:ls r_par {: try{if(ts.ComprobarParametros(id,ls)){ System.out.println("HOLA"); RESULT = ts.getTipoFuncion(id);};}catch(Exception e){System.out.println ("Compilacion Abortada 7: " + e.getMessage());}; :}
+FACTOR ::= tid:id l_par LID:ls r_par {: try{if(ts.ComprobarParametros(id,ls)){RESULT = ts.getTipoFuncion(id);};}catch(Exception e){System.out.println ("Compilacion Abortada 7: " + e.getMessage()); System.exit(-1);}; :}
     | l_bracket EXP:te r_bracket {: RESULT = te; :}
     | tid:id {: RESULT = ts.getTipoVariable(id); :}
     | constint:i {: RESULT = "I"; System.out.println(i); :}
@@ -93,8 +93,8 @@ FACTOR ::= tid:id l_par LID:ls r_par {: try{if(ts.ComprobarParametros(id,ls)){ S
 ;
 
 TYPE ::= tvoid {: RESULT = "V"; :}
-    | tint {: RESULT = "I"; System.out.println("Detectada declaracion de Entero"); :}
-    | tfloat {: RESULT = "F"; System.out.println("Detectada declaracion de Real"); :}
+    | tint {: RESULT = "I";  :}
+    | tfloat {: RESULT = "F"; :}
 ;
 
 LCOND::= LCOND tor LCONDT:c {: RESULT = c; :} 
@@ -109,7 +109,7 @@ LCONDF ::= COND:c {: RESULT = c; :}
         | tnot COND:c {: RESULT = c; :} 
 ;
 
-COND ::= EXP:te0 OPR EXP:te {: try{if(ts.Iguales(te0,te,null)){ RESULT = "B"; };}catch(Exception e){System.out.println ("Compilacion Abortada: " + e.getMessage());}; :}
+COND ::= EXP:te0 OPR EXP:te {: try{if(ts.Iguales(te0,te,null)){ RESULT = "B"; };}catch(Exception e){System.out.println ("Compilacion Abortada: " + e.getMessage()); System.exit(-1);}; :}
 ;
 
 OPR::=  equals 
